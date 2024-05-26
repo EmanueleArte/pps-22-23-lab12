@@ -12,7 +12,7 @@ object Scala2P:
 
   given Conversion[String, Term] = Term.createTerm(_)
   given Conversion[Seq[_], Term] =  _.mkString("[",",","]")
-  given Conversion[String, Theory] = Theory.parseLazilyWithStandardOperators(_)
+  given Conversion[String, Theory] = new Theory(_);
 
   def mkPrologEngine(theory: Theory): Term => LazyList[SolveInfo] =
     val engine = Prolog()
@@ -53,6 +53,6 @@ object TryScala2P extends App:
   engine("permutation([1,2,3],L)") foreach (println(_))
   // permutation([1,2,3],[1,2,3]) ... permutation([1,2,3],[3,2,1])
 
-  val input = new Struct("permutation",(1 to 20), Var.anonymous())
+  val input = new Struct("permutation",(1 to 20), Var())
   engine(input) map (extractTerm(_,1)) take 100 foreach (println(_))
   // [1,2,3,4,..,20] ... [1,2,..,15,20,16,18,19,17]
