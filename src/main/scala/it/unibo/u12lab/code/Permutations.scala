@@ -1,5 +1,7 @@
 package it.unibo.u12lab.code
 
+import scala.annotation.tailrec
+
 object Permutations extends App:
 
   // first an example of for-comprehension with streams..
@@ -15,19 +17,29 @@ object Permutations extends App:
   // now let's do permutations
   // fill this method remove such that it works as of the next println
   // - check e.g. how method "List.split" works
-  def removeAtPos[A](list:List[A], n:Int) = ???
+  def removeAtPos[A](list:List[A], n:Int) = list.splitAt(n) match
+    case (before, _ :: after) => before ++ after
+    case _ => list
+
   println(removeAtPos(List(10,20,30,40),1)) // 10,30,40
 
   def permutations[A](list: List[A]): LazyList[List[A]] = list match
     case Nil => LazyList(Nil)
-    case _ => ???
-    /* here a for comprehension that:
+    /*
+      here a for comprehension that:
        - makes i range across all indexes of list (converted as stream)
        - assigns e to element at position i
        - assigns r to the rest of the list as obtained from removeAtPos
        - makes pr range across all results of recursively calling permutations on r
        - combines by :: e with pr
-       */
+    */
+    case _ =>
+      for
+        i <- list.indices.to(LazyList)
+        e = list(i)
+        r = removeAtPos(list, i)
+        pr <- permutations(r)
+      yield e::pr
 
   val list = List(10,20,30,40)
   println(permutations(list).toList)
